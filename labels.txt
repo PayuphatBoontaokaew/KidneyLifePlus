@@ -1,0 +1,3 @@
+0 Retina-Normal
+1 Retina-Cataract
+2 Retina-Glaucoma
