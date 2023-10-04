@@ -10,7 +10,7 @@ normalized = np.zeros((50,50))
 
 # Normalize the image
 img_resize = cv2.resize(img,(640,640))
-img_normalized = cv2.normalize(img_resize, normalized, 0, 1.0,cv2.NORM_MINMAX, dtype=cv2.CV_32F)
+img_normalized = cv2.normalize(img_resize, None, 0, 1.0,cv2.NORM_MINMAX, dtype=cv2.CV_32F)
 
 # visualize the normalized image
 cv2.imshow('Normalized Image', img_normalized)
