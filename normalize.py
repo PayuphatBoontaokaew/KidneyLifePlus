@@ -20,4 +20,3 @@ print("Image data after Normalize:\n", img_normalized)
 
 # normalization or standardization
 
-
