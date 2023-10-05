@@ -9,10 +9,8 @@ img = cv2.imread('/Users/payuphatboontaokaew/Documents/GitHub/KidneyLifePlus/PDR
 print("Image data before Normalize:\n", img)
 normalized = np.zeros((50,50))
 
-
 img_resize = cv2.resize(img,(640,640))
 img_normalized = cv2.normalize(img_resize, None, 0, 1.0,cv2.NORM_MINMAX, dtype=cv2.CV_32F)
-
 
 cv2.imshow('Normalized Image', img_normalized)
 cv2.waitKey(0)
