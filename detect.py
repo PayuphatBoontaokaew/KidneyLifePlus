@@ -28,13 +28,13 @@ from utils.torch_utils import select_device, smart_inference_mode
 
 # Define the mapping of detected diseases to kidney disease risk levels
 disease_to_kidney_risk = {
-    "Cataract": "Low Risk",
-    "Glaucoma": "Moderate Risk",
-    "Normal": "No Risk",
-    "PDR": "High Risk",
-    "moderateNPDR": "Moderate Risk",
-    "severeNPDR": "High Risk",
-    "verysevereNPDR": "Very High Risk"
+    "Cataract": "Kidney Stage 1",
+    "Glaucoma": "Kidney Stage 2",
+    "Normal": "No Kidney",
+    "PDR": "Kidney Stage 4",
+    "moderateNPDR": "Kidney Stage 3",
+    "severeNPDR": "High Risk 4",
+    "verysevereNPDR": "Kidney Stage 5"
 }
 
 
@@ -160,35 +160,39 @@ def run(
                     n = (det[:, 5] == c).sum()  # detections per class
                     s += f"{n} {names[int(c)]}{'s' * (n > 1)}, "  # add to string
 
-                # Write results
+                # ... (previous code)
+
+                # Initialize a list to store confidence scores for calculating the average
+                # Initialize variables to track the highest confidence and the corresponding detected disease and kidney risk
+                highest_confidence = 0.0
+                highest_detected_disease = "Unknown"
+                highest_kidney_risk = "Unknown"
+
+                # Loop through detections
                 for *xyxy, conf, cls in reversed(det):
                     c = int(cls)  # integer class
-                    label = names[c] if hide_conf else f'{names[c]}'
+                    label = names[c] if hide_conf else f'{names[c]} {conf:.2f}'  # Include confidence score
                     confidence = float(conf)
-                    confidence_str = f'{confidence:.2f}'
 
                     # Map detected disease to kidney disease risk
                     detected_disease = names[c]
                     kidney_risk = disease_to_kidney_risk.get(detected_disease, "Unknown")
 
-                    if save_csv:
-                        write_to_csv(p.name, label, confidence_str, kidney_risk)
+                    # Check if the current confidence is higher than the highest confidence
+                    if confidence > highest_confidence:
+                        highest_confidence = confidence
+                        highest_detected_disease = detected_disease
+                        highest_kidney_risk = kidney_risk
 
-                    if save_txt:  # Write to file
-                        xywh = (xyxy2xywh(torch.tensor(xyxy).view(1, 4)) / gn).view(-1).tolist()  # normalized xywh
-                        line = (cls, *xywh, conf) if save_conf else (cls, *xywh)  # label format
-                        with open(f'{txt_path}.txt', 'a') as f:
-                            f.write(('%g ' * len(line)).rstrip() % line + '\n')
+                    # Print Detected Disease, Confidence, and Kidney Risk for each detection
+                    print(f"Detected Disease: {detected_disease}, Confidence: {confidence:.2f}, Kidney Stage: {kidney_risk}")
 
-                    if save_img or save_crop or view_img:  # Add bbox to image
-                        c = int(cls)  # integer class
-                        label = None if hide_labels else (names[c] if hide_conf else f'{names[c]} {conf:.2f}')
-                        annotator.box_label(xyxy, label, color=colors(c, True))
-                    if save_crop:
-                        save_one_box(xyxy, imc, file=save_dir / 'crops' / names[c] / f'{p.stem}.jpg', BGR=True)
+                # Print the highest confidence, detected disease, and kidney risk
+                print(f"Highest Confidence: {highest_confidence:.2f}, Detected Disease: {highest_detected_disease}, Kidney Stage: {highest_kidney_risk}")
 
-                    # Print Detected Disease and Kidney Risk
-                    print(f"Detected Disease: {detected_disease}, Kidney Risk: {kidney_risk}")
+
+# ... (the rest of the code)
+
 
         # Stream results
         im0 = annotator.result()
