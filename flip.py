@@ -18,6 +18,7 @@ augmentation = iaa.Sequential([
     iaa.Flipud(0.5),
     iaa.Affine(rotate=(-90, 90)),
     iaa.Affine(rotate=180),
+    # iaa.Sharpen(alpha=(0, 1.0))  # Sharpen the image
     # iaa.Affine(translate_percent={"x": (-0.2, 0.2), "y": (-0.2, 0.2)}),
     # iaa.Affine(scale=(0.66, 1.34)),  # Equivalent to 34% maximum zoom
     # iaa.Multiply((0.5, 1.5), per_channel=0.5),
